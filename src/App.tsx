@@ -1,41 +1,54 @@
 import { useState } from 'react';
-import { ShoppingCart } from 'lucide-react';
-import { Sheet, SheetTrigger } from '@/components/ui/sheet';
-import Cart from './components/Cart';
-import Product from './components/Product';
-import CartContext from './lib/context';
-import useTheme from './hooks/useTheme';
+import { cn } from './lib/utils';
+
+const modules = import.meta.glob(
+  [
+    './components/**/*.tsx',
+    '!./components/ui/**/*.tsx', // exclude everything inside components/ui
+  ],
+  {
+    eager: true,
+  }
+);
+
+const components = Object.entries(modules).map(([path, module]) => {
+  const nameMatch = path.match(/([^/]+)\.tsx$/);
+  const name = nameMatch ? nameMatch[1] : 'UnnamedComponent';
+  return {
+    name,
+    Component: (module as { default: React.ComponentType }).default,
+  };
+});
+
+console.log('components', components);
 
 function App() {
-  const [count, setCount] = useState(0);
-
-  const { toggleTheme } = useTheme();
+  const [selectedName, setSelectedName] = useState(components[0]?.name || null);
+  const SelectedComponent = components.find(
+    (c) => c.name === selectedName
+  )?.Component;
 
   return (
-    <CartContext.Provider value={{ count, setCount }}>
-      <Sheet>
-        <div className="flex flex-col items-center justify-center min-h-screen bg-stone-400">
-          <SheetTrigger className="absolute top-4 right-4">
-            <div className="h-10 w-10 relative flex items-center justify-center">
-              <span className="absolute -top-1 -right-1 text-[8px] bg-black text-white rounded-full px-2 py-1">
-                {count}
-              </span>
-              <ShoppingCart className="size-6" />
-            </div>
-          </SheetTrigger>
-          <button
-            className="absolute top-4 left-4 bg-black text-white px-4 py-2 rounded-lg"
-            onClick={() => toggleTheme()}
-          >
-            Toggle theme
-          </button>
-          <div className="card">
-            <Product name="apple" description="A juicy red apple" />
-          </div>
-          <Cart quantity={count} setCount={setCount} />
+    <div className="p-8 flex">
+      <div className="w-1/4">
+        <h1 className="text-4xl font-bold text-blueprint mb-4">blueprintcn</h1>
+        <h2 className="text-lg mb-2">Components</h2>
+        <div className="flex flex-col items-start space-y-2 mb-4">
+          {components.map(({ name }) => (
+            <button
+              key={name}
+              className={cn(selectedName === name ? 'underline' : '')}
+              onClick={() => setSelectedName(name)}
+            >
+              {name}
+            </button>
+          ))}
         </div>
-      </Sheet>
-    </CartContext.Provider>
+      </div>
+      <div className="w-3/4 flex items-center justify-center">
+        {SelectedComponent ? <SelectedComponent /> : <p>Select a component</p>}
+      </div>
+    </div>
   );
 }
 
