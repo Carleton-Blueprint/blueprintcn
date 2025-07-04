@@ -8,8 +8,8 @@ const button = cva('', {
   variants: {
     style: {
       blueprint:
-        'bg-blueprint text-white rounded-full px-5 py-2 hover:bg-blueprint-300 transition-colors duration-300 hover:text-white',
-      icon: 'rounded-full text-white bg-blueprint hover:bg-blueprint-300 transition-colors duration-300 p-2 hover:text-white',
+        'bg-blueprint text-white rounded-full px-5 py-2 hover:bg-blueprint-foreground transition-colors duration-300 hover:text-white',
+      icon: 'rounded-full text-white bg-blueprint hover:bg-blueprint-foreground transition-colors duration-300 p-2 hover:text-white',
       ghost: '',
     },
   },
@@ -39,7 +39,7 @@ export default function LinkButton({
       href={href}
       target={newTab ? '_blank' : undefined}
       className={cn(
-        'group flex w-fit items-center font-bold text-blueprint transition-colors ease-in-out duration-300 hover:text-blueprint-300',
+        'group flex w-fit items-center font-bold text-blueprint transition-colors ease-in-out duration-300 hover:text-blueprint-foreground',
         button(variant),
         className
       )}
